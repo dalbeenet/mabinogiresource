@@ -4,6 +4,8 @@
 // 任何其他项目上不应定义此符号。这样，源文件中包含此文件的任何其他项目都会将
 // MABINOGIRESOURCE_API 函数视为是从 DLL 导入的，而此 DLL 则将用此宏定义的
 // 符号视为是被导出的。
+#pragma once
+
 #ifdef MABINOGIRESOURCE_EXPORTS
 #define MABINOGIRESOURCE_API __declspec(dllexport)
 #else
@@ -13,7 +15,7 @@
 struct PACK_RESOURCE_SET {};
 struct PACK_RESOURCE {};
 
-typedef PACK_RESOURCE_SET*PACK_RESOURCE_SET_HANDLE;
+typedef PACK_RESOURCE_SET* PACK_RESOURCE_SET_HANDLE;
 typedef PACK_RESOURCE* PACK_RESOURCE_HANDLE;
 
 //////////////////////////////////////////////////////////////////////////
@@ -42,7 +44,10 @@ MABINOGIRESOURCE_API size_t GetResourceCount(PACK_RESOURCE_SET_HANDLE hResourceS
 
 //////////////////////////////////////////////////////////////////////////
 // 当前实体的全名，为相对路径，如 db/ss.xml
-MABINOGIRESOURCE_API LPCSTR GetName(PACK_RESOURCE_HANDLE hResource);
+MABINOGIRESOURCE_API int GetResourceName(PACK_RESOURCE_HANDLE hResource, LPSTR lpszBuffer, int nBuffer);
+
+// 全名的长度
+MABINOGIRESOURCE_API int GetResourceNameLength(PACK_RESOURCE_HANDLE hResource);
 
 // 返回解压后内容
 MABINOGIRESOURCE_API size_t GetDecompressedContent(PACK_RESOURCE_HANDLE hResource, void* lpBuffer, size_t size);
