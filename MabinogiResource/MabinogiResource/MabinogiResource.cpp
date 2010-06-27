@@ -81,11 +81,11 @@ MABINOGIRESOURCE_API void CloseResource( PACK_RESOURCE_HANDLE hResource )
 	delete hResource;
 }
 
-MABINOGIRESOURCE_API LPCSTR GetName( PACK_RESOURCE_HANDLE hResource )
-{
-	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetName().c_str();
-}
+//MABINOGIRESOURCE_API LPCSTR GetName( PACK_RESOURCE_HANDLE hResource )
+//{
+//	SResource * pSRes = (SResource *) hResource;
+//	return pSRes->m_spResource->GetName().c_str();
+//}
 
 MABINOGIRESOURCE_API size_t GetDecompressedContent( PACK_RESOURCE_HANDLE hResource, void* lpBuffer, size_t size )
 {
@@ -160,4 +160,21 @@ MABINOGIRESOURCE_API void PackResources( PACK_RESOURCE_HANDLE * hResourceArray, 
 	}
 
 	CPackResourceSet::PackResources(resources, version, lpszPackFile);
+}
+
+MABINOGIRESOURCE_API int GetResourceName( PACK_RESOURCE_HANDLE hResource, LPSTR lpszBuffer, int nBuffer )
+{
+	SResource * pSRes = (SResource *) hResource;
+	int nLength = pSRes->m_spResource->GetName().size();
+	nLength = (nLength > nBuffer) ? nBuffer : nLength;
+
+	pSRes->m_spResource->GetName().copy(lpszBuffer, nLength);
+
+	return nLength;
+}
+
+MABINOGIRESOURCE_API int GetResourceNameLength( PACK_RESOURCE_HANDLE hResource )
+{
+	SResource * pSRes = (SResource *) hResource;
+	return pSRes->m_spResource->GetName().size();
 }
