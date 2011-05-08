@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MabinogiResource.h"
+#include "ExportMacro.h"
 #include "IObject.h"
 
 class MABINOGIRESOURCE_API IResource : public IObject
