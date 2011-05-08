@@ -261,6 +261,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\IProgressMonitor.h"
+				>
+			</File>
+			<File
 				RelativePath=".\IResource.h"
 				>
 			</File>

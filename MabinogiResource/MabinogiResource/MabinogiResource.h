@@ -18,6 +18,42 @@ struct PACK_RESOURCE {};
 typedef PACK_RESOURCE_SET* PACK_RESOURCE_SET_HANDLE;
 typedef PACK_RESOURCE* PACK_RESOURCE_HANDLE;
 
+
+struct ProgressMonitorData 
+{
+	int type;
+	union
+	{
+		struct _BeginTask 
+		{
+			LPCTSTR lpszTaskName;
+			int totalWork;
+		} beginTask;
+		struct _Worked
+		{
+			int work;
+		} worked;
+		struct _Done 
+		{
+	
+		} done;
+
+		struct _SetTaskName
+		{
+			LPCTSTR lpszName;
+		} setTaskName;
+
+		struct _SetSubTaskName
+		{
+			LPCTSTR lpszName;
+		} setSubTaskName;
+	} content;
+	DWORD dwParamter;
+};
+// 在压制package文件的时候的回调函数
+// 返回false会中断本次压制
+typedef bool (*ProgressMonitorProc)(ProgressMonitorData * pData);
+
 //////////////////////////////////////////////////////////////////////////
 // 创建资源集和关闭资源集的操作
 MABINOGIRESOURCE_API PACK_RESOURCE_SET_HANDLE CreateResourceSetFromFolder(LPCTSTR lpszFolder);
@@ -75,4 +111,4 @@ MABINOGIRESOURCE_API FILETIME GetLastWriteTime(PACK_RESOURCE_HANDLE hResource);
 //////////////////////////////////////////////////////////////////////////
 
 // 保存为一个pack文件
-MABINOGIRESOURCE_API void PackResources(PACK_RESOURCE_HANDLE * hResourceArray, size_t length, size_t version, LPCTSTR lpszPackFile);
+MABINOGIRESOURCE_API void PackResources(PACK_RESOURCE_HANDLE * hResourceArray, size_t length, size_t version, LPCTSTR lpszPackFile, ProgressMonitorProc proc, DWORD dwParameter);

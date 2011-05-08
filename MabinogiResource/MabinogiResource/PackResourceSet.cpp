@@ -6,145 +6,11 @@
 #include "PackResource.h"
 #include "Utility.h"
 
+#include <atlbase.h>
+#include <atlconv.h>
 #include <algorithm>
 
-
-
-CPackResourceSet::CPackResourceSet(void)
-{
-}
-
-CPackResourceSet::~CPackResourceSet(void)
-{
-	
-}
-
-shared_ptr<IResourceSet> CPackResourceSet::CreateResourceSetFromFile( LPCTSTR lpszPackFile )
-{
-	static shared_ptr<IResourceSet> INVALID_VALUE;
-
-	CPackResourceSet * pResourceSet;
-	shared_ptr<IResourceSet> resourceSet(pResourceSet = new CPackResourceSet());
-	shared_ptr<CWin32File> spFile(new CWin32File(lpszPackFile));
-	if (!spFile->IsOK())
-	{
-		// 打开文件错误
-		return INVALID_VALUE;
-	}
-
-	UINT tmp;
-	PACKAGE_HEADER header;
-	tmp = spFile->Read(&header, sizeof(PACKAGE_HEADER));
-
-	if ( tmp != sizeof(PACKAGE_HEADER))
-	{
-		// 读取文件错误
-		return INVALID_VALUE;
-	}
-
-	// 检查文件头
-	if ( memcmp(header.signature, "PACK", 4) != 0) 
-	{
-		// 文件头错误
-		return INVALID_VALUE;
-	}
-
-
-	PACKAGE_LIST_HEADER listHeader;
-	tmp = spFile->Read(&listHeader, sizeof(PACKAGE_LIST_HEADER));
-
-	if (tmp != sizeof(PACKAGE_LIST_HEADER))
-	{
-		// 读取文件错误
-		return INVALID_VALUE;
-	}
-
-	shared_ptr< vector<char> > spListInfoData(new vector<char>(listHeader.list_header_size));
-	tmp = spFile->Read( &(*spListInfoData->begin()), listHeader.list_header_size );
-	if (tmp != listHeader.list_header_size)
-	{
-		// 读取文件错误
-		return INVALID_VALUE;
-	}
-
-	char * pTemp =  &(*spListInfoData->begin());
-	for (size_t i = 0;i < listHeader.sum; i++)
-	{
-		ITEM_NAME * pItemName = (ITEM_NAME *)pTemp;
-
-		unsigned long ulSize;
-		if (pItemName->len_or_type < 4)
-		{
-			// 第一字节小于4
-			ulSize = (0x10 * (pItemName->len_or_type + 1));
-		}
-		else if (pItemName->len_or_type == 4)
-		{
-			// 可恶的恶魔猫，这里怎么要搞特殊的
-			ulSize = 0x60 ;
-		}
-		else
-		{
-			// 基本参考mabiunpack代码
-			ulSize = pItemName->len + 5;
-		}
-
-		string name;
-		if ( pItemName->len_or_type <= 0x04 )
-		{
-			name = pItemName->sz_ansi_name;
-		}
-		else // 0x05
-		{
-			name = pItemName->sz_ansi_name2;
-		}
-
-		// 指针跨越名称定义区
-		pTemp += ulSize;
-
-		ITEM_INFO * pInfo = (ITEM_INFO*)pTemp;
-
-		// 累计文件偏移，其实这里修改了内存
-		pInfo->offset += sizeof(PACKAGE_HEADER) + sizeof(PACKAGE_LIST_HEADER) + listHeader.list_header_size;
-
-		// 指针定位到下一项
-		pTemp += sizeof(ITEM_INFO);
-
-		shared_ptr<IResource> spResource(new CPackResource(name, spFile, pInfo));
-		pResourceSet->m_Resources.push_back( spResource );
-	}
-
-	//class ResourceGreater
-	//{
-	//public:
-	//	bool operator()(shared_ptr<IResource> spResource1, shared_ptr<IResource> spResource2) 
-	//	{
-	//		return spResource1->GetName() > spResource2->GetName();
-	//	}
-	//};
-
-	//// 对于容器进行排序，以便可以进行二分查找
-	//sort(pResourceSet->m_Resources.begin(), pResourceSet->m_Resources.end(), ResourceGreater());
-
-	return resourceSet;
-}
-
-int CPackResourceSet::FindResourceIndex( LPCSTR lpszName )
-{
-	return CUtility::FindResourceIndex(m_Resources, lpszName);
-}
-
-size_t CPackResourceSet::GetResourceCount()
-{
-	return m_Resources.size();
-}
-
-shared_ptr<IResource> CPackResourceSet::GetResource( size_t index )
-{
-	return m_Resources.at(index);
-}
-
-
+//////////////////////////////////////////////////////////////////////////
 shared_ptr< vector<char> > GetNameChars(LPCSTR lpszName)
 {
 	int nLen = lstrlenA(lpszName) + 1; // 结束符
@@ -191,13 +57,23 @@ shared_ptr< vector<char> > GetNameChars(LPCSTR lpszName)
 	}
 
 }
-
-void CPackResourceSet::PackResources( vector<shared_ptr<IResource> > & resources, size_t version, LPCTSTR lpszPackFile )
+//////////////////////////////////////////////////////////////////////////
+IResourceSet * IResourceSet::CreateResourceSetFromFile(LPCTSTR lpszFile) 
 {
+	CPackResourceSet * pResource = new CPackResourceSet();
+	pResource->Open(lpszFile);
+	return pResource;
+}
+
+bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t version, LPCTSTR lpszPackFile, IProgressMonitor * pMonitor)
+{
+	pMonitor->BeginWork(TEXT("制作Pack文件"), size + 2);
+
+	pMonitor->SetSubTaskName(TEXT("准备Pack文件头"));
 	PACKAGE_HEADER header;
 	memcpy(header.signature, "PACK\002\001\0\0", 8);
 	header.d1 = 1;
-	header.sum = resources.size();
+	header.sum = size;
 
 	FILETIME ft;
 	SYSTEMTIME st;
@@ -211,7 +87,7 @@ void CPackResourceSet::PackResources( vector<shared_ptr<IResource> > & resources
 	lstrcpyA(header.path, "data\\");
 
 	PACKAGE_LIST_HEADER listHeader;
-	listHeader.sum = resources.size();
+	listHeader.sum = size;
 	// 预先设定一个文件列表空间
 	listHeader.list_header_size = 0 ;
 	listHeader.blank_size = 0;
@@ -219,9 +95,9 @@ void CPackResourceSet::PackResources( vector<shared_ptr<IResource> > & resources
 	memset(listHeader.zero, 0, 16);
 
 	vector< shared_ptr<vector<char> > > array_item_name_chars;
-	for (size_t i = 0; i < resources.size();i++)
+	for (size_t i = 0; i < size;i++)
 	{
-		shared_ptr< vector<char> > namechars = GetNameChars(resources[i]->GetName().c_str());
+		shared_ptr< vector<char> > namechars = GetNameChars(resources[i]->GetName());
 
 		array_item_name_chars.push_back(namechars);
 
@@ -232,13 +108,23 @@ void CPackResourceSet::PackResources( vector<shared_ptr<IResource> > & resources
 	outFile.Seek( sizeof(PACKAGE_HEADER) + sizeof(PACKAGE_LIST_HEADER) + listHeader.list_header_size, FILE_BEGIN);
 
 	vector< shared_ptr<ITEM_INFO> > array_info;
-	for (size_t i = 0; i < resources.size();i++)
+	for (size_t i = 0; i < size;i++)
 	{
-		shared_ptr< vector<char> > spCompressedContent = resources[i]->GetCompressedContent();
+		if (!pMonitor->IsCanceled())
+		{
+			// 进行删除
+			return false;
+		}
+
+		pMonitor->SetSubTaskName(CA2T(resources[i]->GetName()));
+
+		size_t compressedSize = resources[i]->GetCompressedSize();
+		vector<char> compressedContent(compressedSize);
+		resources[i]->GetCompressedContent(&compressedContent[0], compressedSize);
 
 		// 写入文件需要加密
-		CUtility::Encrypt(spCompressedContent, version);
-		outFile.Write( &(*spCompressedContent->begin()), spCompressedContent->size() );
+		CUtility::Encrypt(&compressedContent[0], compressedSize, version);
+		outFile.Write( &compressedContent[0], compressedSize );
 
 		shared_ptr<ITEM_INFO> spInfo(new ITEM_INFO);
 		spInfo->compress_size = resources[i]->GetCompressedSize();
@@ -252,16 +138,164 @@ void CPackResourceSet::PackResources( vector<shared_ptr<IResource> > & resources
 
 		array_info.push_back(spInfo);
 
-		listHeader.data_section_size += spCompressedContent->size();
+		listHeader.data_section_size += compressedSize;
+
+		pMonitor->Worked(1);
 	}
 
 	outFile.Seek(0, FILE_BEGIN);
 	outFile.Write(&header, sizeof(PACKAGE_HEADER));
 	outFile.Write(&listHeader, sizeof(PACKAGE_LIST_HEADER));
 
-	for (size_t i = 0; i < resources.size();i++)
+	pMonitor->Worked(1);
+
+	for (size_t i = 0; i < size;i++)
 	{
 		outFile.Write(&(*array_item_name_chars[i]->begin()), array_item_name_chars[i]->size()  );
 		outFile.Write( array_info[i].get(), sizeof(ITEM_INFO) );
 	}
+
+	pMonitor->Worked(1);
+
+	pMonitor->Done();
+
+	return true;
 }
+
+//////////////////////////////////////////////////////////////////////////
+
+CPackResourceSet::CPackResourceSet(void)
+{
+}
+
+CPackResourceSet::~CPackResourceSet(void)
+{
+	
+}
+
+bool CPackResourceSet::Open( LPCTSTR lpszPackFile )
+{
+	shared_ptr<CWin32File> spFile(new CWin32File(lpszPackFile));
+	if (!spFile->IsOK())
+	{
+		// 打开文件错误
+		return false;
+	}
+
+	UINT tmp;
+	PACKAGE_HEADER header;
+	tmp = spFile->Read(&header, sizeof(PACKAGE_HEADER));
+
+	if ( tmp != sizeof(PACKAGE_HEADER))
+	{
+		// 读取文件错误
+		return false;
+	}
+
+	// 检查文件头
+	if ( memcmp(header.signature, "PACK", 4) != 0) 
+	{
+		// 文件头错误
+		return false;
+	}
+
+
+	PACKAGE_LIST_HEADER listHeader;
+	tmp = spFile->Read(&listHeader, sizeof(PACKAGE_LIST_HEADER));
+
+	if (tmp != sizeof(PACKAGE_LIST_HEADER))
+	{
+		// 读取文件错误
+		return false;
+	}
+
+	shared_ptr< vector<char> > spListInfoData(new vector<char>(listHeader.list_header_size));
+	tmp = spFile->Read( &(*spListInfoData->begin()), listHeader.list_header_size );
+	if (tmp != listHeader.list_header_size)
+	{
+		// 读取文件错误
+		return false;
+	}
+
+	char * pTemp =  &(*spListInfoData->begin());
+	for (size_t i = 0;i < listHeader.sum; i++)
+	{
+		ITEM_NAME * pItemName = (ITEM_NAME *)pTemp;
+
+		unsigned long ulSize;
+		if (pItemName->len_or_type < 4)
+		{
+			// 第一字节小于4
+			ulSize = (0x10 * (pItemName->len_or_type + 1));
+		}
+		else if (pItemName->len_or_type == 4)
+		{
+			// 可恶的恶魔猫，这里怎么要搞特殊的
+			ulSize = 0x60 ;
+		}
+		else
+		{
+			// 基本参考mabiunpack代码
+			ulSize = pItemName->len + 5;
+		}
+
+		string name;
+		if ( pItemName->len_or_type <= 0x04 )
+		{
+			name = pItemName->sz_ansi_name;
+		}
+		else // 0x05
+		{
+			name = pItemName->sz_ansi_name2;
+		}
+
+		// 指针跨越名称定义区
+		pTemp += ulSize;
+
+		ITEM_INFO * pInfo = (ITEM_INFO*)pTemp;
+
+		// 累计文件偏移，其实这里修改了内存
+		pInfo->offset += sizeof(PACKAGE_HEADER) + sizeof(PACKAGE_LIST_HEADER) + listHeader.list_header_size;
+
+		// 指针定位到下一项
+		pTemp += sizeof(ITEM_INFO);
+
+		shared_ptr<IResource> spResource(new CPackResource(name, spFile, pInfo));
+		m_Resources.push_back( spResource );
+	}
+
+	//class ResourceGreater
+	//{
+	//public:
+	//	bool operator()(shared_ptr<IResource> spResource1, shared_ptr<IResource> spResource2) 
+	//	{
+	//		return spResource1->GetName() > spResource2->GetName();
+	//	}
+	//};
+
+	//// 对于容器进行排序，以便可以进行二分查找
+	//sort(pResourceSet->m_Resources.begin(), pResourceSet->m_Resources.end(), ResourceGreater());
+
+	return true;
+}
+
+int CPackResourceSet::FindResourceIndex( LPCSTR lpszName )
+{
+	return CUtility::FindResourceIndex(m_Resources, lpszName);
+}
+
+size_t CPackResourceSet::GetResourceCount()
+{
+	return m_Resources.size();
+}
+
+IResource * CPackResourceSet::GetResource( size_t index )
+{
+	return m_Resources.at(index).get();
+}
+
+void CPackResourceSet::Release()
+{
+	delete this;
+}
+

@@ -1,6 +1,11 @@
 #include "StdAfx.h"
 #include "Win32File.h"
 
+CWin32File::CWin32File()
+{
+	m_hFile = NULL;
+}
+
 CWin32File::CWin32File(LPCTSTR lpszFile)
 {
 	Open(lpszFile, false);

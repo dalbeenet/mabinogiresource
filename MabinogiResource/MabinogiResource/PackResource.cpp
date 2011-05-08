@@ -3,8 +3,7 @@
 
 #include "Utility.h"
 #include "Win32File.h"
-#include "zlib/zlib.h"
-#pragma comment(lib, "zlib/zlib")
+
 
 CPackResource::CPackResource( string name, shared_ptr<CWin32File> spFile, ITEM_INFO * pInfo )
 {
@@ -17,9 +16,9 @@ CPackResource::~CPackResource(void)
 {
 }
 
-string CPackResource::GetName() 
+LPCSTR CPackResource::GetName() 
 {
-	return m_name;
+	return m_name.c_str();
 }
 
 size_t CPackResource::GetCompressedSize() 
@@ -52,35 +51,36 @@ FILETIME CPackResource::GetLastWriteTime()
 	return m_info.ft[4];
 }
 
-shared_ptr< vector<char> > CPackResource::GetDecompressedContent() 
+size_t CPackResource::GetDecompressedContent(char * pBuffer, size_t size) 
 {
-	shared_ptr< vector<char> > compressedContent = GetCompressedContent();
-	if (compressedContent.get() == 0)
-	{
-		// 错误
-		return shared_ptr< vector<char> >();
-	}
+	vector<char> compressContent(m_info.compress_size);
 
-	shared_ptr< vector<char> > result(new vector<char>(m_info.decompress_size));
-	unsigned long decodeLen = m_info.decompress_size; 
-	uncompress((Bytef *)&(*result->begin()), &decodeLen, (Bytef *)&(*compressedContent->begin()), m_info.compress_size);
-	return result;
+	GetCompressedContent(&compressContent[0], m_info.compress_size);
+
+	unsigned long decodeLen = size;
+
+	CUtility::ZlibUncompress(pBuffer, &decodeLen, &compressContent[0], m_info.compress_size);
+
+	return decodeLen;
 }
 
-shared_ptr< vector<char> > CPackResource::GetCompressedContent() 
+size_t CPackResource::GetCompressedContent(char * pBuffer, size_t size) 
 {
-	shared_ptr<vector<char> > result(new vector<char>(m_info.compress_size));
-
 	m_spFile->Seek(m_info.offset, FILE_BEGIN);
-	int tmp = m_spFile->Read( &(*result->begin()), m_info.compress_size );
+	int tmp = m_spFile->Read( pBuffer, m_info.compress_size );
 	if (tmp != m_info.compress_size)
 	{
 		// 文件读取错误
-		return shared_ptr< vector<char> >();
+		return 0;
 	}
 
 	// 直接读取的是加密的，需要解密
-	CUtility::Decrypt(result, m_info.seed);
+	CUtility::Decrypt(pBuffer, tmp, m_info.seed);
 
-	return result;
+	return tmp;
+}
+
+void CPackResource::Release()
+{
+	// 资源是CPackResourceSet统一释放的
 }
