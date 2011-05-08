@@ -2,9 +2,9 @@
 #include "Utility.h"
 
 #include "MersenneTwister.h"
-#include "zlib125-dll/include/zlib.h"
+#include "zlib-1.2.5/zlib.h"
 
-#pragma comment(lib, "zlib125-dll/lib/zdll.lib")
+//#pragma comment(lib, "zlib125-dll/lib/zdll.lib")
 
 CUtility::CUtility(void)
 {
