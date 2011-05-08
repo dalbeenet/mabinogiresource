@@ -13,6 +13,15 @@ using namespace std;
 #define tstring string
 #endif
 
+//////////////////////////////////////////////////////////////////////////
+IResourceSet * IResourceSet::CreateResourceSetFromFolder(LPCTSTR lpszPackFolder)
+{
+	CResourceFileSystem * pRfs = new CResourceFileSystem();
+	pRfs->Open(lpszPackFolder);
+	return pRfs;
+}
+
+//////////////////////////////////////////////////////////////////////////
 CResourceFileSystem::CResourceFileSystem(void)
 {
 }
@@ -26,9 +35,9 @@ size_t CResourceFileSystem::GetResourceCount()
 	return m_Resources.size();
 }
 
-shared_ptr<IResource> CResourceFileSystem::GetResource( size_t index )
+IResource * CResourceFileSystem::GetResource( size_t index )
 {
-	return m_Resources.at(index);
+	return m_Resources.at(index).get();
 }
 
 int CResourceFileSystem::FindResourceIndex( LPCSTR lpszName )
@@ -36,7 +45,7 @@ int CResourceFileSystem::FindResourceIndex( LPCSTR lpszName )
 	return CUtility::FindResourceIndex(m_Resources, lpszName);
 }
 
-shared_ptr<IResourceSet> CResourceFileSystem::CreateResourceFileSystemFromFolder( LPCTSTR lpszPackFolder )
+bool CResourceFileSystem::Open( LPCTSTR lpszPackFolder )
 {
 	tstring folderPath = lpszPackFolder;
 	tstring::iterator lastChar = folderPath.end();
@@ -63,27 +72,24 @@ shared_ptr<IResourceSet> CResourceFileSystem::CreateResourceFileSystemFromFolder
 			if ( (ffd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) == 0)
 			{
 				tstring fullPath = folderPath + ffd.cFileName;
-				shared_ptr<IResourceSet> spResourceSet = CPackResourceSet::CreateResourceSetFromFile( fullPath.c_str());
-				if (spResourceSet.get() != 0)
+				CPackResourceSet resourceSet;
+				if (resourceSet.Open(fullPath.c_str()))
 				{
-					// 添加
-					size_t count = spResourceSet->GetResourceCount();
-					for (size_t i = 0; i < count; i++)
+					for (vector<shared_ptr<IResource>>::iterator iter = resourceSet.m_Resources.begin();iter != resourceSet.m_Resources.end();++iter)
 					{
-						shared_ptr<IResource> spResource = spResourceSet->GetResource(i);
 						// 和本地比较版本，保留高版本的
-						ResourceMap::iterator iter = resourceMap.find(spResource->GetName());
-						
-						if (iter != resourceMap.end())
+						ResourceMap::iterator iter2 = resourceMap.find((*iter)->GetName());
+
+						if (iter2 != resourceMap.end())
 						{
-							shared_ptr<IResource> spResourceOld = iter->second;
-							if (spResourceOld->GetVersion() >= spResource->GetVersion())
+							shared_ptr<IResource> spResourceOld = iter2->second;
+							if (spResourceOld->GetVersion() >= (*iter)->GetVersion())
 							{
 								continue;
 							}
 						}
-						
-						resourceMap[spResource->GetName()] = spResource;
+
+						resourceMap[(*iter)->GetName()] = (*iter);
 					}
 				}
 			}
@@ -94,16 +100,21 @@ shared_ptr<IResourceSet> CResourceFileSystem::CreateResourceFileSystemFromFolder
 
 	if (resourceMap.size() > 0)
 	{
-		shared_ptr<IResourceSet> result(new CResourceFileSystem());
+		m_Resources.clear();
 		for (ResourceMap::iterator iter = resourceMap.begin(); iter != resourceMap.end(); ++iter)
 		{
-			((CResourceFileSystem*)result.get())->m_Resources.push_back( iter->second );
+			m_Resources.push_back( iter->second );
 		}
 
-		return result;
+		return true;
 	}
 	else
 	{
-		return shared_ptr<CResourceFileSystem>();
+		return false;
 	}
+}
+
+void CResourceFileSystem::Release()
+{
+	delete this;
 }

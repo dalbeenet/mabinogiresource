@@ -1,11 +1,9 @@
 #pragma once
 
 #include "IResource.h"
-#include <memory>
+#include "IProgressMonitor.h"
 
-using namespace std::tr1;
-
-class IResourceSet
+class IResourceSet : public IObject
 {
 public:
 
@@ -17,9 +15,14 @@ public:
 	virtual int FindResourceIndex(LPCSTR lpszName) = 0;
 
 	// 获得一个资源
-	virtual shared_ptr<IResource> GetResource(size_t index) = 0;
+	virtual IResource * GetResource(size_t index) = 0;
 
 	// 获得资源总数
 	virtual size_t GetResourceCount() = 0;
 
-};
+	static bool PackResources( IResource ** resources, size_t size, size_t version, LPCTSTR lpszPackFile, IProgressMonitor * pMonitor);
+
+	static IResourceSet * CreateResourceSetFromFolder(LPCTSTR lpszPackFolder);
+
+	static IResourceSet * CreateResourceSetFromFile(LPCTSTR lpszFile);
+}; 

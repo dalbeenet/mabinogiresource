@@ -2,26 +2,32 @@
 
 #include "IResourceSet.h"
 
+#include <memory>
+#include <vector>
+
+using namespace std;
+using namespace std::tr1;
 
 class CResourceFileSystem : public IResourceSet
 {
-protected:
-	CResourceFileSystem(void);
 public:
+	CResourceFileSystem(void);
+
 	virtual ~CResourceFileSystem(void);
 
 	// 从一个pack文件夹创建
-	static shared_ptr<IResourceSet> CreateResourceFileSystemFromFolder(LPCTSTR lpszPackFolder);
+	bool Open(LPCTSTR lpszPackFolder);
 
 	// 找到指定全名的资源
 	virtual int FindResourceIndex(LPCSTR lpszName);
 
 	// 获得一个资源
-	virtual shared_ptr<IResource> GetResource(size_t index);
+	virtual IResource * GetResource(size_t index);
 
 	// 获得资源总数
 	virtual size_t GetResourceCount();
 
+	virtual void Release();
 protected:
-	ResourceList m_Resources;
+	vector<shared_ptr<IResource>> m_Resources;
 };

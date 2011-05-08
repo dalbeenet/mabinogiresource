@@ -2,6 +2,9 @@
 #include "Utility.h"
 
 #include "MersenneTwister.h"
+#include "zlib125-dll/include/zlib.h"
+
+#pragma comment(lib, "zlib125-dll/lib/zdll.lib")
 
 CUtility::CUtility(void)
 {
@@ -11,11 +14,11 @@ CUtility::~CUtility(void)
 {
 }
 
-int CUtility::FindResourceIndex( ResourceList & resList, LPCSTR lpszName )
+int CUtility::FindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCSTR lpszName )
 {
 	for (size_t i = 0;i < resList.size();i++)
 	{
-		if (resList.at(i)->GetName() == lpszName)
+		if (lstrcmpiA(resList.at(i)->GetName(), lpszName) == 0)
 		{
 			return i;
 		}
@@ -24,14 +27,14 @@ int CUtility::FindResourceIndex( ResourceList & resList, LPCSTR lpszName )
 	return -1;
 }
 
-int CUtility::BinaryFindResourceIndex( ResourceList & resList, LPCSTR lpszName )
+int CUtility::BinaryFindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCSTR lpszName )
 {
 	size_t begin = 0, end = resList.size() - 1;
 	while (begin <= end)
 	{
 		int middle = (end - begin) / 2 + begin;
 		shared_ptr<IResource> spResrouce = resList.at(middle);
-		int result = spResrouce->GetName().compare(lpszName);
+		int result = lstrcmpiA(spResrouce->GetName(), lpszName);
 
 		if (result == 0)
 		{
@@ -51,25 +54,35 @@ int CUtility::BinaryFindResourceIndex( ResourceList & resList, LPCSTR lpszName )
 	return -1;
 }
 
-void CUtility::Encrypt(shared_ptr< vector<char> > spBuffer, size_t seed )
+void CUtility::Encrypt(char * pBuffer, size_t size, size_t seed )
 {
 	// º”√‹
 	CMersenneTwister mt;
 	unsigned long rseed = (seed << 7) ^ 0xA9C36DE1;
 	mt.init_genrand(rseed);
-	for (size_t i = 0; i < spBuffer->size();i++)
+	for (size_t i = 0; i < size;i++)
 	{
-		spBuffer->at(i) = (char)(spBuffer->at(i)  ^ mt.genrand_int32());
+		pBuffer[i] = (char)(pBuffer[i]  ^ mt.genrand_int32());
 	}
 }
 
-void CUtility::Decrypt(shared_ptr< vector<char> > spBuffer, size_t seed )
+void CUtility::Decrypt(char * pBuffer, size_t size, size_t seed )
 {
 	CMersenneTwister mt;
 	unsigned long rseed = (seed << 7) ^ 0xA9C36DE1;
 	mt.init_genrand(rseed);
-	for (size_t i = 0; i < spBuffer->size();i++)
+	for (size_t i = 0; i < size;i++)
 	{
-		spBuffer->at(i) = (char)(spBuffer->at(i)  ^ mt.genrand_int32());
+		pBuffer[i] = (char)(pBuffer[i]  ^ mt.genrand_int32());
 	}
+}
+
+bool CUtility::ZlibUncompress( void * dest, unsigned long * destLen, const void * source, unsigned long sourceLen )
+{
+	return uncompress((Bytef *)dest, destLen, (Bytef *)source, sourceLen) == Z_OK;
+}
+
+bool CUtility::ZlibCompress( void * dest, unsigned long * destLen, const void * source, unsigned long sourceLen )
+{
+	return compress((Bytef *)dest, destLen, (Bytef *)source, sourceLen) == Z_OK;
 }

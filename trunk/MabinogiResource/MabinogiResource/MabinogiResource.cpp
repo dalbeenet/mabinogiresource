@@ -13,29 +13,40 @@
 
 struct SReourceSet : public PACK_RESOURCE_SET
 {
-	SReourceSet(shared_ptr<IResourceSet> spResourceSet)
+	SReourceSet(IResourceSet * pResourceSet)
 	{
-		m_spResourceSet = spResourceSet;
+		m_pResourceSet = pResourceSet;
 	};
-	shared_ptr<IResourceSet> m_spResourceSet;
+
+	~SReourceSet()
+	{
+		delete m_pResourceSet;
+		m_pResourceSet = NULL;
+	}
+	IResourceSet * m_pResourceSet;
 };
 
 struct SResource : public PACK_RESOURCE
 {
-	SResource(shared_ptr<IResource> spResource)
+	SResource(IResource * pResource)
 	{
-		m_spResource = spResource;
+		m_pResource = pResource;
 	};
-	shared_ptr<IResource> m_spResource;
+	~SResource()
+	{
+		delete m_pResource;
+		m_pResource = NULL;
+	}
+	IResource * m_pResource;
 };
 
 
 MABINOGIRESOURCE_API PACK_RESOURCE_SET_HANDLE CreateResourceSetFromFolder( LPCTSTR lpszFolder )
 {
-	shared_ptr<IResourceSet> spSet = CResourceFileSystem::CreateResourceFileSystemFromFolder(lpszFolder);
-	if (spSet.get() != 0)
+	IResourceSet * pSet = IResourceSet::CreateResourceSetFromFolder(lpszFolder);
+	if (pSet != 0)
 	{
-		return new SReourceSet(spSet);
+		return new SReourceSet(pSet);
 	}
 
 	return 0;
@@ -43,11 +54,11 @@ MABINOGIRESOURCE_API PACK_RESOURCE_SET_HANDLE CreateResourceSetFromFolder( LPCTS
 
 MABINOGIRESOURCE_API PACK_RESOURCE_SET_HANDLE CreateResourceSetFromFile( LPCTSTR lpszFile )
 {
-	shared_ptr<IResourceSet> spSet = CPackResourceSet::CreateResourceSetFromFile(lpszFile);
-	if (spSet.get() != 0)
-	{
-		return new SReourceSet(spSet);
-	}
+	//shared_ptr<IResourceSet> spSet = CPackResourceSet::CreateResourceSetFromFile(lpszFile);
+	//if (spSet.get() != 0)
+	//{
+	//	return new SReourceSet(spSet);
+	//}
 
 	return 0;
 }
@@ -60,20 +71,20 @@ MABINOGIRESOURCE_API void CloseResourceSet( PACK_RESOURCE_SET_HANDLE hResourceSe
 MABINOGIRESOURCE_API int FindResourceIndex( PACK_RESOURCE_SET_HANDLE hResourceSet, LPCSTR lpszName )
 {
 	SReourceSet * pSSet = (SReourceSet *) hResourceSet;
-	return pSSet->m_spResourceSet->FindResourceIndex(lpszName);
+	return pSSet->m_pResourceSet->FindResourceIndex(lpszName);
 }
 
 MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE GetResource( PACK_RESOURCE_SET_HANDLE hResourceSet, size_t index )
 {
 	SReourceSet * pSSet = (SReourceSet *) hResourceSet;
-	shared_ptr<IResource> spRes = pSSet->m_spResourceSet->GetResource(index);
-	return new SResource(spRes);
+	IResource * pRes = pSSet->m_pResourceSet->GetResource(index);
+	return new SResource(pRes);
 }
 
 MABINOGIRESOURCE_API size_t GetResourceCount( PACK_RESOURCE_SET_HANDLE hResourceSet )
 {
 	SReourceSet * pSSet = (SReourceSet *) hResourceSet;
-	return pSSet->m_spResourceSet->GetResourceCount();
+	return pSSet->m_pResourceSet->GetResourceCount();
 }
 
 MABINOGIRESOURCE_API void CloseResource( PACK_RESOURCE_HANDLE hResource )
@@ -90,85 +101,81 @@ MABINOGIRESOURCE_API void CloseResource( PACK_RESOURCE_HANDLE hResource )
 MABINOGIRESOURCE_API size_t GetDecompressedContent( PACK_RESOURCE_HANDLE hResource, void* lpBuffer, size_t size )
 {
 	SResource * pSRes = (SResource *) hResource;
-	shared_ptr< vector<char> > spData = pSRes->m_spResource->GetDecompressedContent();
-	size = size > spData->size() ? spData->size() : size;
-	memcpy(lpBuffer, &(*spData->begin()) , size);
 
-	return size;
+	return pSRes->m_pResource->GetDecompressedContent((char*)lpBuffer, size);
 }
 
 MABINOGIRESOURCE_API size_t GetCompressedContent( PACK_RESOURCE_HANDLE hResource, void* lpBuffer, size_t size )
 {
 	SResource * pSRes = (SResource *) hResource;
-	shared_ptr< vector<char> > spData = pSRes->m_spResource->GetCompressedContent();
-	size = size > spData->size() ? spData->size() : size;
-	memcpy(lpBuffer, &(*spData->begin()) , size);
 
-	return size;
+	return pSRes->m_pResource->GetCompressedContent((char*)lpBuffer, size);
 }
 
 MABINOGIRESOURCE_API size_t GetCompressedSize( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetCompressedSize();
+	return pSRes->m_pResource->GetCompressedSize();
 }
 
 MABINOGIRESOURCE_API size_t GetDecompressedSize( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetDecompressedSize();
+	return pSRes->m_pResource->GetDecompressedSize();
 }
 
 MABINOGIRESOURCE_API size_t GetVersion( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetVersion();
+	return pSRes->m_pResource->GetVersion();
 }
 
 MABINOGIRESOURCE_API FILETIME GetCreationTime( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetCreationTime();
+	return pSRes->m_pResource->GetCreationTime();
 }
 
 MABINOGIRESOURCE_API FILETIME GetLastAccessTime( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetLastAccessTime();
+	return pSRes->m_pResource->GetLastAccessTime();
 }
 
 MABINOGIRESOURCE_API FILETIME GetLastWriteTime( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetLastWriteTime();
+	return pSRes->m_pResource->GetLastWriteTime();
 }
 
 MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE CreateResourceFromFile( LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version )
 {
-	shared_ptr<IResource> spRes = CFileResource::CreateResourceFromFile(lpszFile, lpszResourceName, version);
-	return new SResource(spRes);
+	IResource * pRes = IResource::CreateResourceFromFile(lpszFile, lpszResourceName, version);
+	return new SResource(pRes);
 }
 
 
-MABINOGIRESOURCE_API void PackResources( PACK_RESOURCE_HANDLE * hResourceArray, size_t length, size_t version, LPCTSTR lpszPackFile )
+MABINOGIRESOURCE_API void PackResources( PACK_RESOURCE_HANDLE * hResourceArray, size_t length, size_t version, LPCTSTR lpszPackFile, ProgressMonitorProc proc, DWORD dwParameter)
 {
-	vector<shared_ptr<IResource> > resources;
+
+	vector<IResource*> resources;
 	for (size_t i = 0;i < length;i++)
 	{
 		SResource * pSres = (SResource *)hResourceArray[i];
-		resources.push_back(pSres->m_spResource);
+		resources.push_back(pSres->m_pResource);
 	}
 
-	CPackResourceSet::PackResources(resources, version, lpszPackFile);
+	IResourceSet::PackResources(&resources[0], resources.size(), version, lpszPackFile, NULL);
+
 }
 
 MABINOGIRESOURCE_API int GetResourceName( PACK_RESOURCE_HANDLE hResource, LPSTR lpszBuffer, int nBuffer )
 {
 	SResource * pSRes = (SResource *) hResource;
-	int nLength = pSRes->m_spResource->GetName().size();
+	int nLength = lstrlenA( pSRes->m_pResource->GetName() );
 	nLength = (nLength > nBuffer) ? nBuffer : nLength;
 
-	pSRes->m_spResource->GetName().copy(lpszBuffer, nLength);
+	lstrcpynA(lpszBuffer, pSRes->m_pResource->GetName(), nLength);
 
 	return nLength;
 }
@@ -176,5 +183,5 @@ MABINOGIRESOURCE_API int GetResourceName( PACK_RESOURCE_HANDLE hResource, LPSTR 
 MABINOGIRESOURCE_API int GetResourceNameLength( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return pSRes->m_spResource->GetName().size();
+	return lstrlenA(pSRes->m_pResource->GetName());
 }

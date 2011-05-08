@@ -1,13 +1,8 @@
 #pragma once
 
-#include <string>
-#include <vector>
-#include <memory>
+#include "IObject.h"
 
-using namespace std;
-using namespace std::tr1;
-
-class IResource
+class IResource : public IObject
 {
 public:
 
@@ -16,14 +11,13 @@ public:
 	virtual ~IResource(void){}
 
 	// 当前实体的全名，为相对路径，如 db/ss.xml
-	virtual string GetName() = 0;
+	virtual LPCSTR GetName() = 0;
 
 	// 返回解压后内容（未加密），每次返回新的容器
-	virtual shared_ptr< vector<char> > GetDecompressedContent() = 0;
-
+	virtual size_t GetDecompressedContent(char * pBuffer, size_t size) = 0;
 
 	// 返回解压前内容（未加密），每次返回新的容器
-	virtual shared_ptr< vector<char> > GetCompressedContent() = 0;
+	virtual size_t GetCompressedContent(char * pBuffer, size_t size) = 0;
 
 	// 返回压缩后大小
 	virtual size_t GetCompressedSize() = 0;
@@ -41,7 +35,8 @@ public:
 	virtual FILETIME GetLastAccessTime() = 0;
 
 	// 返回最后写入时间
-	virtual FILETIME GetLastWriteTime() = 0;	
-};
+	virtual FILETIME GetLastWriteTime() = 0;
 
-typedef vector<shared_ptr<IResource> > ResourceList;
+	// 从文件创建一个资源项
+	static IResource * CreateResourceFromFile(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version);
+};

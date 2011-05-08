@@ -1,6 +1,11 @@
 #pragma once
 #include "iresource.h"
 
+#include <string>
+#include <memory>
+using namespace std;
+using namespace std::tr1;
+
 #include "types.h"
 
 class CWin32File;
@@ -8,16 +13,17 @@ class CPackResource : public IResource
 {
 public:
 	CPackResource(string name, shared_ptr<CWin32File> spFile, ITEM_INFO * pInfo);
+
 	virtual ~CPackResource(void);
 
 	// 当前实体的全名，为相对路径，如 db/ss.xml
-	virtual string GetName() ;
+	virtual LPCSTR GetName() ;
 
 	// 返回解压后内容，每次返回新的容器
-	virtual shared_ptr< vector<char> > GetDecompressedContent() ;
+	virtual size_t GetDecompressedContent(char * pBuffer, size_t size) ;
 
 	// 返回解压前内容，每次返回新的容器
-	virtual shared_ptr< vector<char> > GetCompressedContent() ;
+	virtual size_t GetCompressedContent(char * pBuffer, size_t size) ;
 
 	// 返回压缩后大小
 	virtual size_t GetCompressedSize() ;
@@ -37,6 +43,7 @@ public:
 	// 返回最后写入时间
 	virtual FILETIME GetLastWriteTime() ;
 
+	virtual void Release();
 protected:
 	string m_name;
 	shared_ptr<CWin32File> m_spFile;
