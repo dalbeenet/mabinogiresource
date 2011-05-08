@@ -13,11 +13,6 @@ IResource * IResource::CreateResourceFromFile(LPCTSTR lpszFile, LPCSTR lpszResou
 	return new CFileResource(lpszFile, lpszResourceName, version);
 }
 //////////////////////////////////////////////////////////////////////////
-CFileResource::CFileResource(void)
-{
-	m_decompressedSize = m_compressedSize = m_version = 0;
-}
-
 CFileResource::CFileResource(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version)
 {
 	m_version = version;
@@ -30,6 +25,7 @@ CFileResource::CFileResource(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t v
 	m_ftLastAccess = wfd.ftLastAccessTime;
 	m_ftLastWrite = wfd.ftLastWriteTime;
 	m_decompressedSize = wfd.nFileSizeLow;
+	m_compressedSize = 0;
 	::FindClose(hFind);
 }
 
@@ -44,6 +40,11 @@ LPCSTR CFileResource::GetName()
 
 size_t CFileResource::GetCompressedSize() 
 {
+	// 如果压缩大小还未知则给出一个可能值
+	if (m_compressedSize == 0)
+	{
+		return GetDecompressedSize() + 1024;
+	}
 	return m_compressedSize;
 }
 

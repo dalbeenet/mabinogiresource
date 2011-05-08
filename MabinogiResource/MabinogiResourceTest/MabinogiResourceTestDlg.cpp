@@ -6,7 +6,7 @@
 #include "MabinogiResourceTest.h"
 #include "MabinogiResourceTestDlg.h"
 
-#include "../MabinogiResource/MabinogiResource.h"
+#include "../MabinogiResource/IResourceSet.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -92,8 +92,11 @@ HCURSOR CMabinogiResourceTestDlg::OnQueryDragIcon()
 
 void CMabinogiResourceTestDlg::OnBnClickedButton1()
 {
-	PACK_RESOURCE_HANDLE hRes = CreateResourceFromFile(L"E:\\_Mabinogi\\ant.bmp", "ant.bmp", 50);
-	PackResources(&hRes, 1, 88, L"E:\\_Mabinogi\\88.pack");
+	IResource * pRes = IResource::CreateResourceFromFile(TEXT("C:\\setup.log"), "setup.log", 40);
+	IResourceSet::PackResources(&pRes, 1, 50, TEXT("C:\\test.pack"), NULL);
+	pRes->Release();
+	//PACK_RESOURCE_HANDLE hRes = CreateResourceFromFile(L"E:\\_Mabinogi\\ant.bmp", "ant.bmp", 50);
+	//PackResources(&hRes, 1, 88, L"E:\\_Mabinogi\\88.pack");
 
-	CloseResource(hRes);
+	//CloseResource(hRes);
 }

@@ -130,6 +130,7 @@ copy "$(TargetDir)$(ProjectName).lib" "$(TargetDir)lib\"</Command>
     <ClCompile Include="FileResource.cpp" />
     <ClCompile Include="MabinogiResource.cpp" />
     <ClCompile Include="MersenneTwister.cpp" />
+    <ClCompile Include="NullProgressMonitor.cpp" />
     <ClCompile Include="PackResource.cpp" />
     <ClCompile Include="PackResourceSet.cpp" />
     <ClCompile Include="ResourceFileSystem.cpp" />
@@ -231,6 +232,7 @@ copy "$(TargetDir)$(ProjectName).lib" "$(TargetDir)lib\"</Command>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ExportMacro.h" />
     <ClInclude Include="FileResource.h" />
     <ClInclude Include="IObject.h" />
     <ClInclude Include="IProgressMonitor.h" />
@@ -238,6 +240,7 @@ copy "$(TargetDir)$(ProjectName).lib" "$(TargetDir)lib\"</Command>
     <ClInclude Include="IResourceSet.h" />
     <ClInclude Include="MabinogiResource.h" />
     <ClInclude Include="MersenneTwister.h" />
+    <ClInclude Include="NullProgressMonitor.h" />
     <ClInclude Include="PackResource.h" />
     <ClInclude Include="PackResourceSet.h" />
     <ClInclude Include="ResourceFileSystem.h" />

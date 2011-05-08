@@ -8,8 +8,6 @@ using namespace std;
 
 class CFileResource : public IResource
 {
-protected:
-	CFileResource(void);
 public:
 	// 从一个文件创建IResource对象
 	CFileResource(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version);

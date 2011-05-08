@@ -5,6 +5,7 @@
 #include "types.h"
 #include "PackResource.h"
 #include "Utility.h"
+#include "NullProgressMonitor.h"
 
 #include <atlbase.h>
 #include <atlconv.h>
@@ -67,6 +68,11 @@ IResourceSet * IResourceSet::CreateResourceSetFromFile(LPCTSTR lpszFile)
 
 bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t version, LPCTSTR lpszPackFile, IProgressMonitor * pMonitor)
 {
+	NullProgressMonitor nullProgressMonitor;
+	if (pMonitor == NULL)
+	{
+		pMonitor = &nullProgressMonitor;
+	}
 	// 步骤分为
 	// 1 准备pack文件头
 	// 2 准备pack列表头
@@ -127,7 +133,8 @@ bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t ver
 
 		size_t compressedSize = resources[i]->GetCompressedSize();
 		vector<char> compressedContent(compressedSize);
-		resources[i]->GetCompressedContent(&compressedContent[0], compressedSize);
+		compressedSize = resources[i]->GetCompressedContent(&compressedContent[0], compressedSize);
+		compressedContent.resize(compressedSize);
 
 		// 写入文件需要加密
 		CUtility::Encrypt(&compressedContent[0], compressedSize, version);

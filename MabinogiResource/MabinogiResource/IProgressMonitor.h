@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MabinogiResource.h"
+#include "ExportMacro.h"
 
 class MABINOGIRESOURCE_API IProgressMonitor
 {

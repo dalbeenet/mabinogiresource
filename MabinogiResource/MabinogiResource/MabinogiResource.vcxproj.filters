@@ -96,6 +96,9 @@
     <ClCompile Include="zlib-1.2.5\zutil.c">
       <Filter>库文件\zlib</Filter>
     </ClCompile>
+    <ClCompile Include="NullProgressMonitor.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FileResource.h">
@@ -175,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="zlib-1.2.5\zutil.h">
       <Filter>库文件\zlib</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportMacro.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="NullProgressMonitor.h">
+      <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
