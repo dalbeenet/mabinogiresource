@@ -67,9 +67,16 @@ IResourceSet * IResourceSet::CreateResourceSetFromFile(LPCTSTR lpszFile)
 
 bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t version, LPCTSTR lpszPackFile, IProgressMonitor * pMonitor)
 {
-	pMonitor->BeginWork(TEXT("制作Pack文件"), size + 2);
+	// 步骤分为
+	// 1 准备pack文件头
+	// 2 准备pack列表头
+	// 3 准备pack内容， 写入文件
+	// 4 写入文件列表
+
+	pMonitor->BeginWork(TEXT("制作Pack文件"), size + 3);
 
 	pMonitor->SetSubTaskName(TEXT("准备Pack文件头"));
+
 	PACKAGE_HEADER header;
 	memcpy(header.signature, "PACK\002\001\0\0", 8);
 	header.d1 = 1;
@@ -104,18 +111,18 @@ bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t ver
 		listHeader.list_header_size += (namechars->size() + sizeof(ITEM_INFO));
 	}
 
+	pMonitor->Worked(1);
+	if (pMonitor->IsCanceled())
+	{
+		return false;
+	}
+
 	CWin32File outFile(lpszPackFile, true);
 	outFile.Seek( sizeof(PACKAGE_HEADER) + sizeof(PACKAGE_LIST_HEADER) + listHeader.list_header_size, FILE_BEGIN);
 
 	vector< shared_ptr<ITEM_INFO> > array_info;
 	for (size_t i = 0; i < size;i++)
 	{
-		if (!pMonitor->IsCanceled())
-		{
-			// 进行删除
-			return false;
-		}
-
 		pMonitor->SetSubTaskName(CA2T(resources[i]->GetName()));
 
 		size_t compressedSize = resources[i]->GetCompressedSize();
@@ -141,14 +148,24 @@ bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t ver
 		listHeader.data_section_size += compressedSize;
 
 		pMonitor->Worked(1);
+		if (pMonitor->IsCanceled())
+		{
+			return false;
+		}
 	}
 
+	pMonitor->SetSubTaskName(TEXT("写入Pack文件头"));
 	outFile.Seek(0, FILE_BEGIN);
 	outFile.Write(&header, sizeof(PACKAGE_HEADER));
 	outFile.Write(&listHeader, sizeof(PACKAGE_LIST_HEADER));
 
 	pMonitor->Worked(1);
+	if (pMonitor->IsCanceled())
+	{
+		return false;
+	}
 
+	pMonitor->SetSubTaskName(TEXT("写入Pack文件列表信息"));
 	for (size_t i = 0; i < size;i++)
 	{
 		outFile.Write(&(*array_item_name_chars[i]->begin()), array_item_name_chars[i]->size()  );
@@ -156,6 +173,10 @@ bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t ver
 	}
 
 	pMonitor->Worked(1);
+	if (pMonitor->IsCanceled())
+	{
+		return false;
+	}
 
 	pMonitor->Done();
 

@@ -1,9 +1,10 @@
 #pragma once
 
+#include "MabinogiResource.h"
 #include "IResource.h"
 #include "IProgressMonitor.h"
 
-class IResourceSet : public IObject
+class MABINOGIRESOURCE_API IResourceSet : public IObject
 {
 public:
 
