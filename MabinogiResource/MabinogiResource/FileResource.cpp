@@ -8,12 +8,12 @@ using namespace std;
 
 //////////////////////////////////////////////////////////////////////////
 
-IResource * IResource::CreateResourceFromFile(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version)
+IResource * IResource::CreateResourceFromFile(LPCTSTR lpszFile, LPCTSTR lpszResourceName, size_t version)
 {
 	return new CFileResource(lpszFile, lpszResourceName, version);
 }
 //////////////////////////////////////////////////////////////////////////
-CFileResource::CFileResource(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version)
+CFileResource::CFileResource(LPCTSTR lpszFile, LPCTSTR lpszResourceName, size_t version)
 {
 	m_version = version;
 	m_file.Open(lpszFile, false);
@@ -33,7 +33,7 @@ CFileResource::~CFileResource(void)
 {
 }
 
-LPCSTR CFileResource::GetName() 
+LPCTSTR CFileResource::GetName() 
 {
 	return m_name.c_str();
 }

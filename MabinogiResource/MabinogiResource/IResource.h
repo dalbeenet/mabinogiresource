@@ -12,7 +12,7 @@ public:
 	virtual ~IResource(void){}
 
 	// 当前实体的全名，为相对路径，如 db/ss.xml
-	virtual LPCSTR GetName() = 0;
+	virtual LPCTSTR GetName() = 0;
 
 	// 返回解压后内容（未加密），每次返回新的容器
 	virtual size_t GetDecompressedContent(char * pBuffer, size_t size) = 0;
@@ -39,5 +39,5 @@ public:
 	virtual FILETIME GetLastWriteTime() = 0;
 
 	// 从文件创建一个资源项
-	static IResource * CreateResourceFromFile(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version);
+	static IResource * CreateResourceFromFile(LPCTSTR lpszFile, LPCTSTR lpszResourceName, size_t version);
 };

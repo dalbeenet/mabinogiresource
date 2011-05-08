@@ -61,14 +61,14 @@ MABINOGIRESOURCE_API void CloseResourceSet(PACK_RESOURCE_SET_HANDLE hResourceSet
 //////////////////////////////////////////////////////////////////////////
 
 // 从一个文件创建资源
-MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE CreateResourceFromFile(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version);
+MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE CreateResourceFromFile(LPCTSTR lpszFile, LPCTSTR lpszResourceName, size_t version);
 
 // 释放一个资源的引用
 MABINOGIRESOURCE_API void CloseResource(PACK_RESOURCE_HANDLE hResource);
 
 //////////////////////////////////////////////////////////////////////////
 // 找到指定全名的资源
-MABINOGIRESOURCE_API int ResourceSet_FindResourceIndex(PACK_RESOURCE_SET_HANDLE hResourceSet, LPCSTR lpszName);
+MABINOGIRESOURCE_API int ResourceSet_FindResourceIndex(PACK_RESOURCE_SET_HANDLE hResourceSet, LPCTSTR lpszName);
 
 // 获得一个资源
 MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE ResourceSet_GetResource(PACK_RESOURCE_SET_HANDLE hResourceSet, size_t index);
@@ -79,7 +79,7 @@ MABINOGIRESOURCE_API size_t ResourceSet_GetResourceCount(PACK_RESOURCE_SET_HANDL
 
 //////////////////////////////////////////////////////////////////////////
 // 当前实体的全名，为相对路径，如 db/ss.xml
-MABINOGIRESOURCE_API int Resource_GetResourceName(PACK_RESOURCE_HANDLE hResource, LPSTR lpszBuffer, int nBuffer);
+MABINOGIRESOURCE_API int Resource_GetResourceName(PACK_RESOURCE_HANDLE hResource, LPTSTR lpszBuffer, int nBuffer);
 
 // 全名的长度
 MABINOGIRESOURCE_API int Resource_GetResourceNameLength(PACK_RESOURCE_HANDLE hResource);

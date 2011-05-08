@@ -5,7 +5,7 @@
 #include "Win32File.h"
 
 
-CPackResource::CPackResource( string name, shared_ptr<CWin32File> spFile, ITEM_INFO * pInfo )
+CPackResource::CPackResource( tstring name, shared_ptr<CWin32File> spFile, ITEM_INFO * pInfo )
 {
 	m_name = name;
 	m_spFile = spFile;
@@ -16,7 +16,7 @@ CPackResource::~CPackResource(void)
 {
 }
 
-LPCSTR CPackResource::GetName() 
+LPCTSTR CPackResource::GetName() 
 {
 	return m_name.c_str();
 }

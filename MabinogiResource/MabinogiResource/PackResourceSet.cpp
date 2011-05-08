@@ -110,7 +110,7 @@ bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t ver
 	vector< shared_ptr<vector<char> > > array_item_name_chars;
 	for (size_t i = 0; i < size;i++)
 	{
-		shared_ptr< vector<char> > namechars = GetNameChars(resources[i]->GetName());
+		shared_ptr< vector<char> > namechars = GetNameChars(CT2A(resources[i]->GetName()));
 
 		array_item_name_chars.push_back(namechars);
 
@@ -129,7 +129,7 @@ bool IResourceSet::PackResources(IResource ** resources, size_t size, size_t ver
 	vector< shared_ptr<ITEM_INFO> > array_info;
 	for (size_t i = 0; i < size;i++)
 	{
-		pMonitor->SetSubTaskName(CA2T(resources[i]->GetName()));
+		pMonitor->SetSubTaskName(resources[i]->GetName());
 
 		size_t compressedSize = resources[i]->GetCompressedSize();
 		vector<char> compressedContent(compressedSize);
@@ -267,14 +267,14 @@ bool CPackResourceSet::Open( LPCTSTR lpszPackFile )
 			ulSize = pItemName->len + 5;
 		}
 
-		string name;
+		tstring name;
 		if ( pItemName->len_or_type <= 0x04 )
 		{
-			name = pItemName->sz_ansi_name;
+			name = CA2T(pItemName->sz_ansi_name);
 		}
 		else // 0x05
 		{
-			name = pItemName->sz_ansi_name2;
+			name = CA2T(pItemName->sz_ansi_name2);
 		}
 
 		// 指针跨越名称定义区
@@ -307,7 +307,7 @@ bool CPackResourceSet::Open( LPCTSTR lpszPackFile )
 	return true;
 }
 
-int CPackResourceSet::FindResourceIndex( LPCSTR lpszName )
+int CPackResourceSet::FindResourceIndex( LPCTSTR lpszName )
 {
 	return CUtility::FindResourceIndex(m_Resources, lpszName);
 }

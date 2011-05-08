@@ -14,10 +14,10 @@ public:
 	~CUtility(void);
 
 	// 二分查找已排序资源，找不到返回-1
-	static int BinaryFindResourceIndex(vector<shared_ptr<IResource>> & resList, LPCSTR lpszName);
+	static int BinaryFindResourceIndex(vector<shared_ptr<IResource>> & resList, LPCTSTR lpszName);
 
 	// 顺序查找资源，找不到返回-1
-	static int FindResourceIndex(vector<shared_ptr<IResource>> & resList, LPCSTR lpszName);
+	static int FindResourceIndex(vector<shared_ptr<IResource>> & resList, LPCTSTR lpszName);
 
 	// 加密一段字节
 	static void Encrypt(char * pBuffer, size_t size, size_t seed);
