@@ -92,7 +92,7 @@ HCURSOR CMabinogiResourceTestDlg::OnQueryDragIcon()
 
 void CMabinogiResourceTestDlg::OnBnClickedButton1()
 {
-	IResource * pRes = IResource::CreateResourceFromFile(TEXT("C:\\setup.log"), "setup.log", 40);
+	IResource * pRes = IResource::CreateResourceFromFile(TEXT("C:\\setup.log"), TEXT("setup.log"), 40);
 	IResourceSet::PackResources(&pRes, 1, 50, TEXT("C:\\test.pack"), NULL);
 	pRes->Release();
 	//PACK_RESOURCE_HANDLE hRes = CreateResourceFromFile(L"E:\\_Mabinogi\\ant.bmp", "ant.bmp", 50);

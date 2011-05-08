@@ -1,17 +1,13 @@
 #include "StdAfx.h"
 #include "ResourceFileSystem.h"
 
+#include "tstring.h"
 #include "PackResourceSet.h"
 #include "Utility.h"
 #include <map>
 
 using namespace std;
 
-#ifdef _UNICODE
-#define tstring wstring
-#else
-#define tstring string
-#endif
 
 //////////////////////////////////////////////////////////////////////////
 IResourceSet * IResourceSet::CreateResourceSetFromFolder(LPCTSTR lpszPackFolder)
@@ -40,7 +36,7 @@ IResource * CResourceFileSystem::GetResource( size_t index )
 	return m_Resources.at(index).get();
 }
 
-int CResourceFileSystem::FindResourceIndex( LPCSTR lpszName )
+int CResourceFileSystem::FindResourceIndex( LPCTSTR lpszName )
 {
 	return CUtility::FindResourceIndex(m_Resources, lpszName);
 }
@@ -60,7 +56,7 @@ bool CResourceFileSystem::Open( LPCTSTR lpszPackFolder )
 	WIN32_FIND_DATA ffd;
 	HANDLE hFind;
 
-	typedef map<string, shared_ptr<IResource> > ResourceMap;
+	typedef map<tstring, shared_ptr<IResource> > ResourceMap;
 	ResourceMap resourceMap;
 
 	hFind = ::FindFirstFile(condition.c_str(), &ffd);

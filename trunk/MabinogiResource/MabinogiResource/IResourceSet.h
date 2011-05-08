@@ -13,7 +13,7 @@ public:
 	virtual ~IResourceSet(void){}
 
 	// 找到指定全名的资源
-	virtual int FindResourceIndex(LPCSTR lpszName) = 0;
+	virtual int FindResourceIndex(LPCTSTR lpszName) = 0;
 
 	// 获得一个资源
 	virtual IResource * GetResource(size_t index) = 0;

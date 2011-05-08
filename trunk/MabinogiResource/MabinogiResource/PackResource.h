@@ -1,7 +1,7 @@
 #pragma once
 #include "iresource.h"
 
-#include <string>
+#include "tstring.h"
 #include <memory>
 using namespace std;
 using namespace std::tr1;
@@ -12,12 +12,12 @@ class CWin32File;
 class CPackResource : public IResource
 {
 public:
-	CPackResource(string name, shared_ptr<CWin32File> spFile, ITEM_INFO * pInfo);
+	CPackResource(tstring name, shared_ptr<CWin32File> spFile, ITEM_INFO * pInfo);
 
 	virtual ~CPackResource(void);
 
 	// 当前实体的全名，为相对路径，如 db/ss.xml
-	virtual LPCSTR GetName() ;
+	virtual LPCTSTR GetName() ;
 
 	// 返回解压后内容，每次返回新的容器
 	virtual size_t GetDecompressedContent(char * pBuffer, size_t size) ;
@@ -45,7 +45,7 @@ public:
 
 	virtual void Release();
 protected:
-	string m_name;
+	tstring m_name;
 	shared_ptr<CWin32File> m_spFile;
 	ITEM_INFO m_info;
 };

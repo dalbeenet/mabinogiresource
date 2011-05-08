@@ -1,7 +1,7 @@
 #pragma once
 #include "iresource.h"
 
-#include <string>
+#include "tstring.h"
 #include "Win32File.h"
 
 using namespace std;
@@ -10,12 +10,12 @@ class CFileResource : public IResource
 {
 public:
 	// 从一个文件创建IResource对象
-	CFileResource(LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version);
+	CFileResource(LPCTSTR lpszFile, LPCTSTR lpszResourceName, size_t version);
 
 	virtual ~CFileResource(void);
 
 	// 当前实体的全名，为相对路径，如 db/ss.xml
-	virtual LPCSTR GetName() ;
+	virtual LPCTSTR GetName() ;
 
 	// 返回解压后内容，每次返回新的容器
 	virtual size_t GetDecompressedContent(char * pBuffer, size_t size) ;
@@ -44,7 +44,7 @@ public:
 	virtual void Release();
 protected:
 	CWin32File m_file;
-	string m_name;
+	tstring m_name;
 	size_t m_compressedSize;
 	size_t m_decompressedSize;
 	size_t m_version;

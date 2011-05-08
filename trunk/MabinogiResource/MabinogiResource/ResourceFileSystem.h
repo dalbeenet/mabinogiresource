@@ -19,7 +19,7 @@ public:
 	bool Open(LPCTSTR lpszPackFolder);
 
 	// 找到指定全名的资源
-	virtual int FindResourceIndex(LPCSTR lpszName);
+	virtual int FindResourceIndex(LPCTSTR lpszName);
 
 	// 获得一个资源
 	virtual IResource * GetResource(size_t index);

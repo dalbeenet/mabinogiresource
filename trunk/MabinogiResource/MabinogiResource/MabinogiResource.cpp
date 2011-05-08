@@ -172,7 +172,7 @@ MABINOGIRESOURCE_API void CloseResourceSet( PACK_RESOURCE_SET_HANDLE hResourceSe
 	delete hResourceSet;
 }
 
-MABINOGIRESOURCE_API int ResourceSet_FindResourceIndex( PACK_RESOURCE_SET_HANDLE hResourceSet, LPCSTR lpszName )
+MABINOGIRESOURCE_API int ResourceSet_FindResourceIndex( PACK_RESOURCE_SET_HANDLE hResourceSet, LPCTSTR lpszName )
 {
 	SReourceSet * pSSet = (SReourceSet *) hResourceSet;
 	return pSSet->m_pResourceSet->FindResourceIndex(lpszName);
@@ -252,7 +252,7 @@ MABINOGIRESOURCE_API FILETIME Resource_GetLastWriteTime( PACK_RESOURCE_HANDLE hR
 	return pSRes->m_pResource->GetLastWriteTime();
 }
 
-MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE CreateResourceFromFile( LPCTSTR lpszFile, LPCSTR lpszResourceName, size_t version )
+MABINOGIRESOURCE_API PACK_RESOURCE_HANDLE CreateResourceFromFile( LPCTSTR lpszFile, LPCTSTR lpszResourceName, size_t version )
 {
 	IResource * pRes = IResource::CreateResourceFromFile(lpszFile, lpszResourceName, version);
 	return new SResource(pRes);
@@ -275,13 +275,13 @@ MABINOGIRESOURCE_API void PackResources( PACK_RESOURCE_HANDLE * hResourceArray, 
 
 }
 
-MABINOGIRESOURCE_API int Resource_GetResourceName( PACK_RESOURCE_HANDLE hResource, LPSTR lpszBuffer, int nBuffer )
+MABINOGIRESOURCE_API int Resource_GetResourceName( PACK_RESOURCE_HANDLE hResource, LPTSTR lpszBuffer, int nBuffer )
 {
 	SResource * pSRes = (SResource *) hResource;
-	int nLength = lstrlenA( pSRes->m_pResource->GetName() );
+	int nLength = lstrlen( pSRes->m_pResource->GetName() );
 	nLength = (nLength > nBuffer) ? nBuffer : nLength;
 
-	lstrcpynA(lpszBuffer, pSRes->m_pResource->GetName(), nLength);
+	lstrcpyn(lpszBuffer, pSRes->m_pResource->GetName(), nLength);
 
 	return nLength;
 }
@@ -289,5 +289,5 @@ MABINOGIRESOURCE_API int Resource_GetResourceName( PACK_RESOURCE_HANDLE hResourc
 MABINOGIRESOURCE_API int Resource_GetResourceNameLength( PACK_RESOURCE_HANDLE hResource )
 {
 	SResource * pSRes = (SResource *) hResource;
-	return lstrlenA(pSRes->m_pResource->GetName());
+	return lstrlen(pSRes->m_pResource->GetName());
 }

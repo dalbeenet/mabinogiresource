@@ -14,11 +14,11 @@ CUtility::~CUtility(void)
 {
 }
 
-int CUtility::FindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCSTR lpszName )
+int CUtility::FindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCTSTR lpszName )
 {
 	for (size_t i = 0;i < resList.size();i++)
 	{
-		if (lstrcmpiA(resList.at(i)->GetName(), lpszName) == 0)
+		if (lstrcmpi(resList.at(i)->GetName(), lpszName) == 0)
 		{
 			return i;
 		}
@@ -27,14 +27,14 @@ int CUtility::FindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCSTR
 	return -1;
 }
 
-int CUtility::BinaryFindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCSTR lpszName )
+int CUtility::BinaryFindResourceIndex( vector<shared_ptr<IResource>> & resList, LPCTSTR lpszName )
 {
 	size_t begin = 0, end = resList.size() - 1;
 	while (begin <= end)
 	{
 		int middle = (end - begin) / 2 + begin;
 		shared_ptr<IResource> spResrouce = resList.at(middle);
-		int result = lstrcmpiA(spResrouce->GetName(), lpszName);
+		int result = lstrcmpi(spResrouce->GetName(), lpszName);
 
 		if (result == 0)
 		{
