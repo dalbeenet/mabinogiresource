@@ -1,5 +1,8 @@
 #pragma once
-class IObject
+
+#include "MabinogiResource.h"
+
+class MABINOGIRESOURCE_API IObject
 {
 public:
 
@@ -13,5 +16,9 @@ public:
 
 	// 进行释放操作
 	virtual void Release() = 0;
+
+private:
+	IObject(IObject const & other);
+	IObject& operator=(IObject const & other);
 };
 

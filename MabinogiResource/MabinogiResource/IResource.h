@@ -1,8 +1,9 @@
 #pragma once
 
+#include "MabinogiResource.h"
 #include "IObject.h"
 
-class IResource : public IObject
+class MABINOGIRESOURCE_API IResource : public IObject
 {
 public:
 
