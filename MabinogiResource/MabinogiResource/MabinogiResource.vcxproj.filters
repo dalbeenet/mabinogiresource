@@ -191,5 +191,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
+    <None Include="zlib-1.2.5\README">
+      <Filter>库文件\zlib</Filter>
+    </None>
   </ItemGroup>
 </Project>
