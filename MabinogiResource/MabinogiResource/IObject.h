@@ -14,11 +14,17 @@ public:
 	{
 	}
 
-	// 进行释放操作
-	virtual void Release() = 0;
+	IObject(IObject const & other) 
+	{
+		DoCopyConstructor(other);
+	}
+	IObject& operator=(IObject const & other)
+	{
+		return DoAssignmentOperation(other);
+	}
 
-private:
-	IObject(IObject const & other);
-	IObject& operator=(IObject const & other);
+protected:
+	virtual void DoCopyConstructor(IObject const & other) = 0;
+	virtual IObject& DoAssignmentOperation(IObject const & other) = 0;
 };
 
