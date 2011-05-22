@@ -191,6 +191,12 @@
     <ClInclude Include="IFile.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="IFolder.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="IFileSystem.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="ReadMe.txt" />
