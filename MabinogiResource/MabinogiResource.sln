@@ -5,6 +5,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MabinogiResource", "Mabinog
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MabinogiResourceTest", "MabinogiResourceTest\MabinogiResourceTest.vcxproj", "{40C0ED62-14C4-44E7-B08A-498987D86C28}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MabinogiPackageTool", "MabinogiPackageTool\MabinogiPackageTool.vcxproj", "{F9594749-A37A-4484-9D2D-A9E07776B60B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DB35E93-8DFB-44BB-8A20-29581A2CA995} = {5DB35E93-8DFB-44BB-8A20-29581A2CA995}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -23,6 +28,10 @@ Global
 		{40C0ED62-14C4-44E7-B08A-498987D86C28}.Debug|Win32.Build.0 = Debug|Win32
 		{40C0ED62-14C4-44E7-B08A-498987D86C28}.Release|Win32.ActiveCfg = Release|Win32
 		{40C0ED62-14C4-44E7-B08A-498987D86C28}.Release|Win32.Build.0 = Release|Win32
+		{F9594749-A37A-4484-9D2D-A9E07776B60B}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F9594749-A37A-4484-9D2D-A9E07776B60B}.Debug|Win32.Build.0 = Debug|Win32
+		{F9594749-A37A-4484-9D2D-A9E07776B60B}.Release|Win32.ActiveCfg = Release|Win32
+		{F9594749-A37A-4484-9D2D-A9E07776B60B}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

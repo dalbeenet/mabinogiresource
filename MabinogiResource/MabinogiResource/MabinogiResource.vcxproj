@@ -234,6 +234,7 @@ copy "$(TargetDir)$(ProjectName).lib" "$(TargetDir)lib\"</Command>
   <ItemGroup>
     <ClInclude Include="ExportMacro.h" />
     <ClInclude Include="FileResource.h" />
+    <ClInclude Include="IFile.h" />
     <ClInclude Include="IObject.h" />
     <ClInclude Include="IProgressMonitor.h" />
     <ClInclude Include="IResource.h" />
