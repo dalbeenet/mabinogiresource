@@ -9,6 +9,7 @@
 #include "PackResourceSet.h"
 #include "ResourceFileSystem.h"
 #include "FileResource.h"
+#include "TCHAR.H"
 
 struct SReourceSet : public PACK_RESOURCE_SET
 {
@@ -278,10 +279,10 @@ MABINOGIRESOURCE_API void PackResources( PACK_RESOURCE_HANDLE * hResourceArray, 
 MABINOGIRESOURCE_API int Resource_GetResourceName( PACK_RESOURCE_HANDLE hResource, LPTSTR lpszBuffer, int nBuffer )
 {
 	SResource * pSRes = (SResource *) hResource;
-	int nLength = lstrlen( pSRes->m_pResource->GetName() );
+	int nLength = wcslen( pSRes->m_pResource->GetName() );
 	nLength = (nLength > nBuffer) ? nBuffer : nLength;
 
-	lstrcpyn(lpszBuffer, pSRes->m_pResource->GetName(), nLength);
+	_tcsncpy_s(lpszBuffer, nBuffer,pSRes->m_pResource->GetName(), nBuffer);
 
 	return nLength;
 }
