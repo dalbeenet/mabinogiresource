@@ -279,7 +279,7 @@ MABINOGIRESOURCE_API void PackResources( PACK_RESOURCE_HANDLE * hResourceArray, 
 MABINOGIRESOURCE_API int Resource_GetResourceName( PACK_RESOURCE_HANDLE hResource, LPTSTR lpszBuffer, int nBuffer )
 {
 	SResource * pSRes = (SResource *) hResource;
-	int nLength = wcslen( pSRes->m_pResource->GetName() );
+	int nLength = _tcslen( pSRes->m_pResource->GetName() );
 	nLength = (nLength > nBuffer) ? nBuffer : nLength;
 
 	_tcsncpy_s(lpszBuffer, nBuffer,pSRes->m_pResource->GetName(), nBuffer);
