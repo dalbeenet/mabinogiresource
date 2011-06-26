@@ -5,6 +5,7 @@
 #include "PackResourceSet.h"
 #include "Utility.h"
 #include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -38,7 +39,7 @@ IResource * CResourceFileSystem::GetResource( size_t index )
 
 int CResourceFileSystem::FindResourceIndex( LPCTSTR lpszName )
 {
-	return CUtility::FindResourceIndex(m_Resources, lpszName);
+	return CUtility::BinaryFindResourceIndex(m_Resources, lpszName);
 }
 
 bool CResourceFileSystem::Open( LPCTSTR lpszPackFolder )
@@ -101,6 +102,8 @@ bool CResourceFileSystem::Open( LPCTSTR lpszPackFolder )
 		{
 			m_Resources.push_back( iter->second );
 		}
+
+		sort(m_Resources.begin(), m_Resources.end(), ResourceGreater());
 
 		return true;
 	}

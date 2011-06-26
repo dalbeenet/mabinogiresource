@@ -7,6 +7,15 @@
 using namespace std;
 using namespace std::tr1;
 
+class ResourceGreater
+{
+public:
+	bool operator()(shared_ptr<IResource> spResource1, shared_ptr<IResource> spResource2) 
+	{
+		return spResource1->GetName() > spResource2->GetName();
+	}
+};
+
 class CUtility
 {
 public:

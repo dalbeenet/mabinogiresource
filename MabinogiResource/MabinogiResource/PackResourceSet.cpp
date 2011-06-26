@@ -292,24 +292,15 @@ bool CPackResourceSet::Open( LPCTSTR lpszPackFile )
 		m_Resources.push_back( spResource );
 	}
 
-	//class ResourceGreater
-	//{
-	//public:
-	//	bool operator()(shared_ptr<IResource> spResource1, shared_ptr<IResource> spResource2) 
-	//	{
-	//		return spResource1->GetName() > spResource2->GetName();
-	//	}
-	//};
-
-	//// 对于容器进行排序，以便可以进行二分查找
-	//sort(pResourceSet->m_Resources.begin(), pResourceSet->m_Resources.end(), ResourceGreater());
+	// 对于容器进行排序，以便可以进行二分查找
+	sort(m_Resources.begin(), m_Resources.end(), ResourceGreater());
 
 	return true;
 }
 
 int CPackResourceSet::FindResourceIndex( LPCTSTR lpszName )
 {
-	return CUtility::FindResourceIndex(m_Resources, lpszName);
+	return CUtility::BinaryFindResourceIndex(m_Resources, lpszName);
 }
 
 size_t CPackResourceSet::GetResourceCount()
