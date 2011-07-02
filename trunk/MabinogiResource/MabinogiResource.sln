@@ -12,6 +12,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MabinogiResource.net", "Mab
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MabinogiResourceTest.net", "MabinogiResourceTest.net\MabinogiResourceTest.net.csproj", "{5F33C139-7D53-464C-B180-77F406AC9B77}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MabinogiResourceTool", "MabinogiResourceTool\MabinogiResourceTool.vcxproj", "{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{5DB35E93-8DFB-44BB-8A20-29581A2CA995} = {5DB35E93-8DFB-44BB-8A20-29581A2CA995}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SubversionScc) = preSolution
 		Svn-Managed = True
@@ -66,6 +71,16 @@ Global
 		{5F33C139-7D53-464C-B180-77F406AC9B77}.Release|Win32.ActiveCfg = Release|x86
 		{5F33C139-7D53-464C-B180-77F406AC9B77}.Release|x86.ActiveCfg = Release|x86
 		{5F33C139-7D53-464C-B180-77F406AC9B77}.Release|x86.Build.0 = Release|x86
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Debug|Win32.Build.0 = Debug|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Debug|x86.ActiveCfg = Debug|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Release|Win32.ActiveCfg = Release|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Release|Win32.Build.0 = Release|Win32
+		{A641EAE2-0DBE-4CD9-9AA7-FFDF998DE42D}.Release|x86.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
