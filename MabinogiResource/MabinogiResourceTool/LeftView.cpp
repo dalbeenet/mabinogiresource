@@ -81,13 +81,12 @@ CMabinogiResourceToolDoc* CLeftView::GetDocument() // 非调试版本是内联的
 #endif //_DEBUG
 
 
-// CLeftView 消息处理程序
-
-
 void CLeftView::OnUpdate(CView* pSender, LPARAM /*lHint*/, CObject* /*pHint*/)
 {
 	if (pSender != this)
 	{
+		GetTreeCtrl().LockWindowUpdate();
+
 		// 注意这里的实现对多次刷新支持不佳
 		m_keyMap.clear();
 		m_nodeMap.clear();
@@ -100,6 +99,8 @@ void CLeftView::OnUpdate(CView* pSender, LPARAM /*lHint*/, CObject* /*pHint*/)
 			CString path = iter->first;
 			HTREEITEM hItem = CreateTreeNode(root, path);
 		}
+
+		GetTreeCtrl().UnlockWindowUpdate();
 	}
 
 }

@@ -33,7 +33,8 @@ public:
 #endif
 
 protected:
-
+	bool m_bIsAscSort;
+	int m_nLastSortColumnIndex;
 // 生成的消息映射函数
 protected:
 	afx_msg void OnStyleChanged(int nStyleType, LPSTYLESTRUCT lpStyleStruct);
@@ -42,6 +43,14 @@ protected:
 	afx_msg void OnContextMenu(CWnd* pWnd, CPoint point);
 	DECLARE_MESSAGE_MAP()
 	virtual void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/);
+public:
+	afx_msg void OnEditOpen();
+	afx_msg void OnUpdateEditOpen(CCmdUI *pCmdUI);
+	afx_msg void OnEditOpenas();
+	afx_msg void OnUpdateEditOpenas(CCmdUI *pCmdUI);
+	afx_msg void OnEditUncompress();
+	afx_msg void OnUpdateEditUncompress(CCmdUI *pCmdUI);
+	afx_msg void OnLvnColumnclick(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 #ifndef _DEBUG  // MabinogiResourceToolView.cpp 中的调试版本
